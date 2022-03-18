@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Till's Page</title>
+
+  <link rel="icon" type="image/png" href="icon.png"/>
+
+  <style>
+    h1 {text-align: center;
+        text-shadow: 3px 3px 10px rgb(87, 85, 85);
+        border: 2px solid whitesmoke;
+        opacity: 1;
+        padding: 10px;
+    }
+
+    h2 {
+        text-align: center;
+        size: 20px;
+        color: whitesmoke;
+    }
+
+    label {
+        text-align: center;
+        color: white;
+        font-family: Arial;
+        font-size: large;
+    }
+
+    canvas {
+        text-align: center;
+        padding: 0;
+        margin: auto;
+        display: block;
+        width: 800px;
+    }
+
+    p {
+        text-align: center;
+        color: white;
+        font-family: Arial;
+        font-size: large;
+    }
+
+    input {
+        text-align: center;
+        color: black;
+        font-family: Arial;
+        font-size: large;
+    }
+
+    small {
+        text-align: center;
+        color: white;
+        font-family: Arial;
+        font-size: large;
+    }
+
+    ul {
+        list-style-type: none;
+        font-family: Arial;
+        text-shadow: 3px 3px 10px rgb(177, 177, 175);
+        font-size: large;
+        margin: 0;
+        padding: 0;
+        width: 200px;
+        background-color: #f1f1f1;
+    }
+    
+    li a {
+        display: block;
+        color: #000;
+        padding: 8px 0 8px 16px;
+        text-decoration: none;
+    }
+    
+    /* Change the link color on hover */
+    li a:hover {
+        background-color: rgb(99, 98, 98);
+        color: white;
+    }
+
+    #myProgress {
+        width: 100%;
+        background-color: #ddd;
+    }
+
+    #myBar {
+        width: 1%;
+        height: 30px;
+        background-color: #04AA6D;
+    }
+
+    #myFlash {
+        width:0.01%;
+        height: 30px;
+        background-color: rgb(243, 167, 26);
+    }
+    </style>
+
+</head>
+<body style="background-color: #323842;">   
+
+    <h1 style="color: whitesmoke;">home 🏠 to BrowserNet</h1>
+
+    <ul>
+        <li style="text-align: center; background-color: rgb(221, 221, 221);"><a href="home.html">home</a></li>
+        <li style="text-align: center"><a href="about.html">about</a></li>
+    </ul>
+
+    <!-- bar was here -->
+
+    <div style="column-count: 3">
+        <!-- col 1 -->
+        <div>
+            <br><br>
+            <ul>
+                <li style="text-align: center; cursor: pointer;background-color: rgb(221, 221, 221);"><a onclick="show_train()">train model 🔁</a></li>
+                <li style="text-align: center; cursor: pointer;"><a onclick="show_predict()">get prediction 📶</a></li>
+            </ul><br><br><br>
+        </div>
+
+        <!-- col 2 -->
+        <label for="myProgress">Training Progress: </label> <br><br>
+        <div id="myProgress">
+            <div id="myBar"></div>
+        </div>
+        <p id="input_x">X = [default]</p>
+        <p id="input_epochs">Epochs = default</p>
+        <br style="line-height: 10px" />
+        
+
+        <!-- col 3 -->
+        <label for="input_slider">Input: </label> <br>
+        <input type="range" id="input_slider" name="input_slider"
+                min="0" max="9" style="text-align: right" onchange="update_input_slider()">
+        <br><br>
+        <label for="epochs_slider">Epochs: </label> <br>
+        <input type="range" id="epochs_slider" name="epochs_slider"
+                min="100" max="10000" step="100" style="text-align: right" onchange="update_epochs_slider()">
+
+    </div>
+    
+    <script>
+        // for train model button
+        function show_train(){
+            move();
+            learn();
+        }
+
+        // for prediction button
+        function show_predict(){
+            flash_bar();
+            predict();
+        }
+
+        // Update sliders
+        function update_input_slider(){
+            var x = parseInt(document.getElementById("input_slider").value);
+            document.getElementById("input_x").innerText = "X = [" + x + "]";
+        }
+
+        function update_epochs_slider(){
+            var epochs = parseInt(document.getElementById("epochs_slider").value);
+            document.getElementById("input_epochs").innerText = "Epochs = " + epochs;
+        }
+
+        // Set initial x, epoch values
+        update_input_slider();
+        update_epochs_slider();
+
+    </script>
+
+    <script>
+        var i = 0;
+        var i2 = 0;
+
+        function move(){
+            if (i == 0){
+                i = 1;
+                var elem = document.getElementById("myBar");
+                var width = 1;
+                var id = setInterval(frame, 1);
+                function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                    i = 0;
+                } else {
+                    width = width + 4;
+                    elem.style.width = width + "%";
+                }
+                }
+            }
+        }
+
+        function flash_bar(){
+            var elem = document.getElementById("myBar");
+            var id2 = setInterval(frame2, 300);
+            function frame2() {
+                if (elem.style.backgroundColor == "rgb(243, 167, 26)"){
+                    elem.style.backgroundColor = "#04AA6D";
+                    clearInterval(id2);
+                    i2 = 0;
+                }else{
+                    // window.alert(elem.style.backgroundColor);
+                    elem.style.backgroundColor = "#f3a71a";
+                }
+            }
+        }
+    </script>
+
+    <!-- Model outputs -->
+    <div>
+        <p id="training_info"> </p>
+    </div>
+ 
+
+    <!-- Load TF.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
+
+    <!-- TF-script -->
+    <script>
+
+        // Define global model
+        const model = tf.sequential();
+
+        function learn(){
+            // reset notification text
+            document.getElementById("training_info").innerText = "Training model...";
+
+            // Add layers to the model
+            model.add(tf.layers.dense({inputShape: [1], units: 10, activation: "relu"}));
+            // model.add(tf.layers.dense({units: 4, activation: "relu"}));
+            model.add(tf.layers.dense({units: 10, activation: "softmax"}));
+
+
+            // Prepare the model for training: Specify the loss and the optimizer.
+            model.compile({
+                loss: "sparseCategoricalCrossentropy",
+                optimizer:"adam"
+            });
+
+            // Training data
+            // values, shape (rows, cols)
+            const xs = tf.tensor2d([0,1,2,3,4,5,6,7,8,9], [10, 1]);
+            const ys = tf.tensor2d([1,2,3,4,5,6,7,8,9,0], [10, 1]);
+
+            // Train the model
+            var num_epochs = parseInt(document.getElementById("epochs_slider").value);
+            model.fit(xs, ys, {epochs:num_epochs}).then(() => {
+
+                // Notify training end
+                document.getElementById("training_info").innerText = "Training finished!";
+                /*
+                // predict input data
+                y = model.predict(tf.tensor2d([5], [1, 1])); // .print()
+
+                // Notify prediction
+                document.getElementById("output_y").innerText = y;
+                */
+            });
+        }
+
+        function predict(){
+            // get input data
+            var x = parseInt(document.getElementById("input_slider").value);
+
+            // Notify input
+            // document.getElementById("input_x").innerText = "X = [" + x + "]";
+
+            // predict input data
+            var input_tensor = tf.tensor2d([x], [1, 1]);
+            y_tensor = model.predict(input_tensor);
+            y = y_tensor.dataSync();
+
+            // Notify prediction
+            document.getElementById("output_y").innerText = "Y = " + y_tensor;
+
+            // Show prediction as chart
+            yValues = y;
+            //myChart.data.datasets[0].data = y;
+            //myChart.update();
+            update_chart(y);
+        }
+
+        // Call functions
+        // learn();
+
+    </script>
+
+
+    <!-- Chart.js for visuals -->
+    <h2>The model predicts:</h2>
+    <p id="output_y"></p>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <canvas id="myChart" style="max-width: 1200px; max-height: 465px"></canvas>
+
+    <script>
+        var xValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+        var barColors = [
+        "#7400b8",
+        "#6930c3",
+        "#5e60ce",
+        "#4361ee",
+        "#5390d9",
+        "#4ea8de",
+        "#48bfe3",
+        "#56cfe1",
+        "#ef476f",
+        "#f72585"
+        ];
+
+        function update_chart(y){
+            var mychart = new Chart("myChart", {
+            type: "line", // polarArea radar line bar
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: barColors,
+                    data: y
+                }]
+            },
+            options: {
+                interaction:{
+                    intersect: false
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        pointLabels: {
+                            display: true,
+                            centerPointLabels: true,
+                            font: {
+                                size: 20
+                            }
+                        }
+                    }
+                },
+                title: {
+                    display: false,
+                    text: "predictions"
+                }
+            }
+            });
+        }
+
+        // initial empty chart
+        update_chart([0,0,0,0,0,0,0,0,0,0]);
+
+    </script>
+
+
+</body>
+</html>
